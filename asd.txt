@@ -1,0 +1,24 @@
+npm install @mathieustan/vue-datepicker
+npm ERR! code ERESOLVE
+npm ERR! ERESOLVE unable to resolve dependency tree
+npm ERR!
+npm ERR! While resolving: appeal@0.1.0
+npm ERR! Found: core-js@3.31.1
+npm ERR! node_modules/core-js
+npm ERR!   core-js@"^3.8.3" from the root project  
+npm ERR!
+npm ERR! Could not resolve dependency:
+npm ERR! peer core-js@"^2.6.5" from @mathieustan/vue-datepicker@0.2.11
+npm ERR! node_modules/@mathieustan/vue-datepicker
+npm ERR!   @mathieustan/vue-datepicker@"*" from the root project
+npm ERR! 
+npm ERR! Fix the upstream dependency conflict, or retry
+npm ERR! this command with --force or --legacy-peer-deps
+npm ERR! to accept an incorrect (and potentially broken) dependency resolution.
+npm ERR! 
+npm ERR!
+npm ERR! For a full report see:
+npm ERR! C:\Users\Djok\AppData\Local\npm-cache\_logs\2023-07-06T17_24_22_511Z-eresolve-report.txt
+
+npm ERR! A complete log of this run can be found in:
+npm ERR!     C:\Users\Djok\AppData\Local\npm-cache\_logs\2023-07-06T17_24_22_511Z-debug-0.log
