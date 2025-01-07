@@ -7,6 +7,9 @@
       height: bodySize.bodyHeight + 'px',
     }"
   >
+  <div>
+      <pre>{{ print.design }}</pre>
+    </div>
     <img
       v-if="print.design.PageBackground.Image != ''"
       class="center__bg"
@@ -134,6 +137,8 @@
         }"></div>
       </div>
     </div> -->
+
+    
     <div
       v-for="item in print.design.Page"
       :key="item.id"
@@ -247,7 +252,55 @@
       <p
         :id="item.id"
         @click="all(item)"
-        v-if="item.parametr == 'text' && lang == 'ru'"
+        v-if="item.parametr == 'text' && item.isTicketNumber"
+        class="text"
+        :style="{
+          width: item.size.width + 'px',
+          height: item.size.height + 'px',
+          background: item.backColor,
+          color: item.textColor,
+          fontFamily: item.textFont,
+          fontSize: item.textSize + 'px',
+          lineHeight: item.lineHeight + 'px',
+          fontWeight: item.fontWeight,
+          fontStyle: item.fontStyle,
+          textDecoration: item.textDecoration,
+          margin: 0,
+          textAlign: item.textAlign,
+          zIndex: item.position.zIndex,
+        }"
+      >
+        {{ ticketNumber }}
+      </p>
+
+      <p
+        :id="item.id"
+        @click="all(item)"
+        v-if="item.parametr == 'text' && item.isWaitingTime"
+        class="text"
+        :style="{
+          width: item.size.width + 'px',
+          height: item.size.height + 'px',
+          background: item.backColor,
+          color: item.textColor,
+          fontFamily: item.textFont,
+          fontSize: item.textSize + 'px',
+          lineHeight: item.lineHeight + 'px',
+          fontWeight: item.fontWeight,
+          fontStyle: item.fontStyle,
+          textDecoration: item.textDecoration,
+          margin: 0,
+          textAlign: item.textAlign,
+          zIndex: item.position.zIndex,
+        }"
+      >
+        {{ ticketWaitingTime }}
+      </p>
+
+      <p
+        :id="item.id"
+        @click="all(item)"
+        v-if="item.parametr == 'text' && !item.isTicketNumber && !item.isWaitingTime && lang == 'ru'"
         class="text"
         :style="{
           width: item.size.width + 'px',
@@ -270,7 +323,7 @@
       <p
         :id="item.id"
         @click="all(item)"
-        v-if="item.parametr == 'text' && lang == 'uz'"
+        v-if="item.parametr == 'text' && !item.isTicketNumber && lang == 'uz'"
         class="text"
         :style="{
           width: item.size.width + 'px',
@@ -294,7 +347,7 @@
       <p
         :id="item.id"
         @click="all(item)"
-        v-if="item.parametr == 'text' && lang == 'en'"
+        v-if="item.parametr == 'text' && !item.isTicketNumber && lang == 'en'"
         class="text"
         :style="{
           width: item.size.width + 'px',
@@ -318,7 +371,7 @@
       <p
         :id="item.id"
         @click="all(item)"
-        v-if="item.parametr == 'text' && lang == 'oz'"
+        v-if="item.parametr == 'text' && !item.isTicketNumber && lang == 'oz'"
         class="text"
         :style="{
           width: item.size.width + 'px',
@@ -849,6 +902,7 @@ export default {
       i: 0,
       lang: "ru",
       backProgres: "",
+      // ticketNumber: "",
       time: "",
       settings: {},
     };
@@ -856,11 +910,16 @@ export default {
   beforeMount() {
     this.settings = window.MY_SETINGS_TERMINAL_DESIGN;
     this.lang = this.$route.query.lang;
+    
   },
+  // created() {
+  //   this.createNewTicket();
+  // },
   mounted() {
     // this.getWaitingClientsCountForService()
-    this.createNewTicket();
-    this.getGetAverageWaitTimeForServices()
+    // const qwe = this.print.design.Page.map(item => item.parametr === 'text' ? item : '')
+    // console.log(qwe)
+    this.getGetAverageWaitTimeForServices();
     this.print.design.Page.find((item) => {
       if (item.parametr == "progresbar") this.time = item.timeProgresBar;
     });
@@ -874,6 +933,8 @@ export default {
     ...mapGetters({
       bodySize: "getPageSize",
       print: "getPagePrint",
+      ticketNumber: "getTicketNumber",
+      ticketWaitingTime: "getTicketWaitingTime"
     }),
   },
   beforeDestroy() {
@@ -897,18 +958,18 @@ export default {
         }, 5 * this.time);
       }
 
-      this.backProgres = setTimeout(() => {
-        this.$emit("printClose", false);
-        this.$router
-          .push({
-            name: "pageNext",
-            params: { id: this.settings.firstPage },
-            query: {
-              designId: this.$route.query.designId,
-            },
-          })
-          .catch(() => {});
-      }, this.time * 500);
+      // this.backProgres = setTimeout(() => {
+      //   this.$emit("printClose", false);
+      //   this.$router
+      //     .push({
+      //       name: "pageNext",
+      //       params: { id: this.settings.firstPage },
+      //       query: {
+      //         designId: this.$route.query.designId,
+      //       },
+      //     })
+      //     .catch(() => {});
+      // }, this.time * 500);
     },
     getWaitingClientsCountForService() {
       this.resurs.design.Page.find((item) => {
@@ -933,7 +994,9 @@ export default {
               `${this.settings.api}/CreateNewTicket?ServiceId=${this.$route.params.serviceId}&TypeId=${this.$route.params.typeId}&Lang=${this.$route.query.lang}&PrintTicket=1`
             )
             .then((response) => {
-              // console.log(response.data);
+              this.ticketNumber = response.data.task.TicketPrefix + response.data.task.TicketNumber
+              // this.ticketNumber = response.data.task.TicketPrefix + response.data.task.TicketNumber
+              // console.log(response.data.task.TicketPrefix + response.data.task.TicketNumber);
               if (response.data.Code < 0) {
                 this.$toast.warning(response.data.Msg);
               }
@@ -948,6 +1011,8 @@ export default {
               `${this.settings.api}/CreateNewTicket?ServiceId=${this.$route.params.serviceId}&ClerkId=${this.$route.params.clerkId}&TypeId=${this.$route.params.typeId}&Lang=${this.$route.query.lang}&PrintTicket=1`
             )
             .then((response) => {
+              this.ticketNumber = response.data.task.TicketPrefix + response.data.task.TicketNumber
+              // this.ticketNumber = response.data.task.TicketPrefix + response.data.task.TicketNumber
               if (response.data.Code < 0) {
                 this.$toast.warning(response.data.Msg);
               }
@@ -958,7 +1023,9 @@ export default {
       }
     },
     getGetAverageWaitTimeForServices() {
-      axios.get(`${this.settings.api}/GetAverageWaitTimeForServices`).then(res => console.log(res))
+      axios
+        .get(`${this.settings.api}/GetAverageWaitTimeForServices`)
+        .then((res) => console.log(res, 123));
     },
     all(options) {
       switch (options.dealings) {

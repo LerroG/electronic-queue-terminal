@@ -381,6 +381,8 @@ export default new Vuex.Store({
     page: [],
     printInfo: [],
     printPage: [],
+    ticketNumber: "",
+    ticketWaitingTime: "",
     // print: [],
     clekrs: [],
     // timeProgresBar: 0
@@ -388,6 +390,12 @@ export default new Vuex.Store({
   mutations: {
     MUTPAGESIZE(state, bodysize) {
       state.body = bodysize;
+    },
+    MUTTICKETWAITINGTIME(state, ticketWaitingTime) {
+      state.ticketWaitingTime = ticketWaitingTime;
+    },
+    MUTTICKETNUMBER(state, ticketNumber) {
+      state.ticketNumber = ticketNumber;
     },
     MUTPAGES(state, pages) {
       state.info = pages;
@@ -416,6 +424,12 @@ export default new Vuex.Store({
     // }
   },
   actions: {
+    AC_TICKET_WAITING_TIME(context, ticketWaitingTime) {
+      context.commit('MUTTICKETWAITINGTIME', ticketWaitingTime);
+    },
+    AC_TICKET_NUMBER(context, ticketNumber) {
+      context.commit('MUTTICKETNUMBER', ticketNumber);
+    },
     AC_PAGE_SIZE(context, bodysize) {
       context.commit('MUTPAGESIZE', bodysize);
     },
@@ -444,6 +458,12 @@ export default new Vuex.Store({
   getters: {
     getPageSize(state) {
       return state.body;
+    },
+    getTicketNumber(state) {
+      return state.ticketNumber;
+    },
+    getTicketWaitingTime(state) {
+      return state.ticketWaitingTime;
     },
     getPage(state) {
       return state.page;

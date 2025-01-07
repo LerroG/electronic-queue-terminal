@@ -592,7 +592,6 @@ export default {
   mounted() {
     // console.log(this.$route.params.id)
     this.$emit('updateLoading')
-
     setInterval(() => {
       const clockElement = document.querySelector('.clock')
       // Проверяем, найден ли элемент
@@ -636,6 +635,55 @@ export default {
     // }
   },
   methods: {
+    async createNewTicket(clerkId, serviceId, typeId) {
+  try {
+    // Формирование URL для первого запроса (создание билета)
+    const ticketUrl = clerkId 
+      ? `${this.settings.api}/CreateNewTicket?ServiceId=${serviceId}&ClerkId=${clerkId}&TypeId=${typeId}&Lang=${this.$route.query.lang}&PrintTicket=1`
+      : `${this.settings.api}/CreateNewTicket?ServiceId=${serviceId}&TypeId=${typeId}&Lang=${this.$route.query.lang}&PrintTicket=1`;
+
+    // Формирование URL для второго запроса (получение времени ожидания)
+    const waitTimeUrl = `${this.settings.api}/GetAverageWaitTimeForServices`;
+
+    // Добавление небольшой задержки перед запросом
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    // Выполнение обоих запросов параллельно
+    const [ticketResponse, waitTimeResponse] = await Promise.all([
+      axios.get(ticketUrl),           // Запрос для создания билета
+      axios.get(waitTimeUrl)          // Запрос для получения времени ожидания
+    ]);
+
+    // Обработка результата запроса на создание билета
+    this.$store.dispatch(
+      "AC_TICKET_NUMBER",
+      ticketResponse.data.task.TicketPrefix + ticketResponse.data.task.TicketNumber
+    );
+
+    if (ticketResponse.data.Code < 0) {
+      this.$toast.warning(ticketResponse.data.Msg);
+      throw new Error(ticketResponse.data.Msg);  // Генерация ошибки для отклонения promise
+    }
+
+    // Поиск времени ожидания для конкретного serviceId
+    const serviceWaitTime = waitTimeResponse.data.find(item => item.serviceId === serviceId);
+
+    this.$store.dispatch(
+      "AC_TICKET_WAITING_TIME",
+      serviceWaitTime ? serviceWaitTime.waitTime : null
+    );
+console.log(serviceWaitTime.waitTime)
+    // Возвращаем оба ответа, но только waitTime для нужного serviceId
+    return { 
+      ticketResponse, 
+      waitTime: serviceWaitTime ? serviceWaitTime.waitTime : null 
+    };
+
+  } catch (error) {
+    console.error(error);
+    throw error;  // Отклоняем promise в случае ошибки
+  }
+},
     all(options) {
       switch (options.dealings) {
         case 1: //getBookedTicket
@@ -730,14 +778,16 @@ export default {
           }, 100)
 
           setTimeout(() => {
-            this.$router.push({
+            this.createNewTicket("", options.servicesItem.Id, 1).then(() => {
+              this.$router.push({
               name: 'Print',
               params: { id: options.printItem.PrintPageName, typeId: 1, serviceId: options.servicesItem.Id, clerkId: '' },
               query: {
                 designId: this.$route.query.designId,
                 lang: this.lang,
               }
-            }).catch(() => { })
+            })
+            })
           }, 200)
           break
         case 9: //VIP
@@ -766,14 +816,16 @@ export default {
           }, 100)
 
           setTimeout(() => {
-            this.$router.push({
+            this.createNewTicket("", options.servicesItem.Id, 1).then(() => {
+              this.$router.push({
               name: 'Print',
               params: { id: options.printItem.PrintPageName, typeId: 1, serviceId: options.servicesItem.Id, clerkId: '' },
               query: {
                 designId: this.$route.query.designId,
                 lang: this.lang,
               }
-            }).catch(() => { })
+            })
+            })
           }, 200)
           break
         case 12: //goToPageEventAndLanguage
@@ -808,14 +860,17 @@ export default {
           }, 100)
 
           setTimeout(() => {
-            this.$router.push({
+            this.createNewTicket("", options.servicesItem.Id, 4).then(() => {
+              this.$router.push({
               name: 'Print',
               params: { id: options.printItem.PrintPageName, typeId: 4, serviceId: options.servicesItem.Id, clerkId: '' },
               query: {
                 designId: this.$route.query.designId,
                 lang: this.lang,
               }
-            }).catch(() => { })
+            })
+            })
+            
           }, 200)
           break
       }
@@ -897,24 +952,29 @@ export default {
           // this.print = true;
           if (params == 'Clerk') {
             let ClerkId = this.infoClerks[paramsIndex - 1].ClerkId
-
-            this.$router.push({
+            this.createNewTicket(ClerkId, options.servicesItem.Id, 1).then(() => {
+              this.$router.push({
               name: 'Print',
               params: { id: options.printItem.PrintPageName, typeId: 1, serviceId: options.servicesItem.Id, clerkId: ClerkId },
               query: {
                 designId: this.$route.query.designId,
                 lang: this.lang,
               }
-            }).catch(() => { })
+            })
+            })
+            
           } else if (params == 'Service') {
-            this.$router.push({
+            this.createNewTicket("", options.servicesItem.Id, 1).then(() => {
+              this.$router.push({
               name: 'Print',
               params: { id: options.printItem.PrintPageName, typeId: 1, serviceId: options.servicesItem.Id, clerkId: '' },
               query: {
                 designId: this.$route.query.designId,
                 lang: this.lang,
               }
-            }).catch(() => { })
+            })
+            })
+           
           }
           break
         case 9: //VIP
@@ -943,14 +1003,17 @@ export default {
           }, 100)
 
           setTimeout(() => {
-            this.$router.push({
+            this.createNewTicket("", options.servicesItem.Id, 1).then(() => {
+              this.$router.push({
               name: 'Print',
               params: { id: options.printItem.PrintPageName, typeId: 1, serviceId: options.servicesItem.Id, clerkId: '' },
               query: {
                 designId: this.$route.query.designId,
                 lang: this.lang,
               }
-            }).catch(() => { })
+            })
+            })
+            
           }, 200)
           break
         case 12: //goToPageEventAndLanguage
@@ -985,14 +1048,17 @@ export default {
           }, 100)
 
           setTimeout(() => {
-            this.$router.push({
+            this.createNewTicket("", options.servicesItem.Id, 1).then(() => {
+              this.$router.push({
               name: 'Print',
               params: { id: this.printPageName, typeId: 1, serviceId: options.servicesItem.Id, clerkId: '' },
               query: {
                 designId: this.$route.query.designId,
                 lang: this.lang,
               }
-            }).catch(() => { })
+            })
+            })
+            
           }, 200)
           break
       }
@@ -1041,14 +1107,16 @@ export default {
       if (this.passwordModalInput == this.password) {
         this.passwordModal = false
         // this.print = true;
-        this.$router.push({
+        this.createNewTicket("", this.serviceId, 2).then(() => {
+          this.$router.push({
           name: 'Print',
           params: { id: this.printPageName, typeId: 2, serviceId: this.serviceId, clerkId: '' },
           query: {
             designId: this.$route.query.designId,
             lang: this.lang,
           }
-        }).catch(() => { })
+        })
+        })
 
         this.password = ''
         this.serviceId = ''
