@@ -958,18 +958,18 @@ export default {
         }, 5 * this.time);
       }
 
-      // this.backProgres = setTimeout(() => {
-      //   this.$emit("printClose", false);
-      //   this.$router
-      //     .push({
-      //       name: "pageNext",
-      //       params: { id: this.settings.firstPage },
-      //       query: {
-      //         designId: this.$route.query.designId,
-      //       },
-      //     })
-      //     .catch(() => {});
-      // }, this.time * 500);
+      this.backProgres = setTimeout(() => {
+        this.$emit("printClose", false);
+        this.$router
+          .push({
+            name: "pageNext",
+            params: { id: this.settings.firstPage },
+            query: {
+              designId: this.$route.query.designId,
+            },
+          })
+          .catch(() => {});
+      }, this.time * 500);
     },
     getWaitingClientsCountForService() {
       this.resurs.design.Page.find((item) => {
