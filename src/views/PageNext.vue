@@ -45,7 +45,7 @@
           color: item.textColor,
           fontFamily: item.textFont,
           fontSize: item.textSize + 'px',
-          lineHeight: item.textSize + 'px',
+          lineHeight: item.lineHeight + 'px',
           fontWeight: item.fontWeight,
           fontStyle: item.fontStyle,
           textDecoration: item.textDecoration,
@@ -71,7 +71,7 @@
             color: item.textColor,
             fontFamily: item.textFont,
             fontSize: item.textSize + 'px',
-            lineHeight: item.textSize + 'px',
+            lineHeight: item.lineHeight + 'px',
             fontWeight: item.fontWeight,
             fontStyle: item.fontStyle,
             textDecoration: item.textDecoration,
@@ -87,7 +87,7 @@
             color: item.textColor,
             fontFamily: item.textFont,
             fontSize: item.textSize + 'px',
-            lineHeight: item.textSize + 'px',
+            lineHeight: item.lineHeight + 'px',
             fontWeight: item.fontWeight,
             fontStyle: item.fontStyle,
             textDecoration: item.textDecoration,
@@ -103,7 +103,7 @@
             color: item.textColor,
             fontFamily: item.textFont,
             fontSize: item.textSize + 'px',
-            lineHeight: item.textSize + 'px',
+            lineHeight: item.lineHeight + 'px',
             fontWeight: item.fontWeight,
             fontStyle: item.fontStyle,
             textDecoration: item.textDecoration,
@@ -119,7 +119,7 @@
             color: item.textColor,
             fontFamily: item.textFont,
             fontSize: item.textSize + 'px',
-            lineHeight: item.textSize + 'px',
+            lineHeight: item.lineHeight + 'px',
             fontWeight: item.fontWeight,
             fontStyle: item.fontStyle,
             textDecoration: item.textDecoration,
@@ -279,12 +279,12 @@
           zIndex: item.position.zIndex,
         }"
       >
-        <!-- width: item.size.width + 'px',
-          height: item.size.height + 'px', -->
         <input
           type="text"
           v-model="numpadText"
           :style="{
+            textAlign: 'center',
+            color: item.textColor,
             width: item.size.width + 'px',
             height: 'auto',
             fontFamily: item.textFont,
@@ -310,7 +310,14 @@
             @click="numbad(index)"
             :style="{
               width: item.size.buttonWidth + 'px',
-              heights: item.size.buttonHeight + 'px',
+              height: item.size.buttonHeight + 'px',
+              backgroundColor: item.numpadBgButton,
+              borderRadius: item.numpadButtonRadius + 'px',
+              color: item.numpadTextColor,
+              borderColor: item.numpadBorderButton,
+              fontWeight: item.numpadButtonFontWeight,
+              fontSize: item.numpadButtonTextSize + 'px',
+              fontFamily: item.numpadButtonTextFont,
             }"
           >
             {{ index }}
@@ -320,7 +327,14 @@
             @click="numbad('c')"
             :style="{
               width: item.size.buttonWidth + 'px',
-              heights: item.size.buttonHeight + 'px',
+              height: item.size.buttonHeight + 'px',
+              backgroundColor: item.numpadBgButton,
+              borderRadius: item.numpadButtonRadius + 'px',
+              color: item.numpadTextColor,
+              borderColor: item.numpadBorderButton,
+              fontWeight: item.numpadButtonFontWeight,
+              fontSize: item.numpadButtonTextSize + 'px',
+              fontFamily: item.numpadButtonTextFont,
             }"
           >
             C
@@ -330,7 +344,14 @@
             @click="numbad(0)"
             :style="{
               width: item.size.buttonWidth + 'px',
-              heights: item.size.buttonHeight + 'px',
+              height: item.size.buttonHeight + 'px',
+              backgroundColor: item.numpadBgButton,
+              borderRadius: item.numpadButtonRadius + 'px',
+              color: item.numpadTextColor,
+              borderColor: item.numpadBorderButton,
+              fontWeight: item.numpadButtonFontWeight,
+              fontSize: item.numpadButtonTextSize + 'px',
+              fontFamily: item.numpadButtonTextFont,
             }"
           >
             0
@@ -340,7 +361,14 @@
             @click="numbad('backspace')"
             :style="{
               width: item.size.buttonWidth + 'px',
-              heights: item.size.buttonHeight + 'px',
+              height: item.size.buttonHeight + 'px',
+              backgroundColor: item.numpadBgButton,
+              borderRadius: item.numpadButtonRadius + 'px',
+              color: item.numpadTextColor,
+              borderColor: item.numpadBorderButton,
+              fontWeight: item.numpadButtonFontWeight,
+              fontSize: item.numpadButtonTextSize + 'px',
+              fontFamily: item.numpadButtonTextFont,
             }"
           >
             ⌫
@@ -911,8 +939,8 @@ export default {
       try {
         // Формирование URL для первого запроса (создание билета)
         const ticketUrl = clerkId
-          ? `${this.settings.api}/CreateNewTicket?ServiceId=${serviceId}&ClerkId=${clerkId}&TypeId=${typeId}&Lang=${this.$route.query.lang}&PrintTicket=1`
-          : `${this.settings.api}/CreateNewTicket?ServiceId=${serviceId}&TypeId=${typeId}&Lang=${this.$route.query.lang}&PrintTicket=1`;
+          ? `${this.settings.api}/CreateNewTicket?ServiceId=${serviceId}&ClerkId=${clerkId}&TypeId=${typeId}&Lang=${this.lang}&PrintTicket=1`
+          : `${this.settings.api}/CreateNewTicket?ServiceId=${serviceId}&TypeId=${typeId}&Lang=${this.lang}&PrintTicket=1`;
 
         // Формирование URL для второго запроса (получение времени ожидания)
         const waitTimeUrl = `${this.settings.api}/GetAverageWaitTimeForServices`;

@@ -1,23 +1,20 @@
 <template>
   <div
     @click="progres()"
-    class="print"
+    class="center"
     :style="{
       width: bodySize.bodyWidth + 'px',
       height: bodySize.bodyHeight + 'px',
     }"
   >
-  <div>
-      <pre>{{ print.design }}</pre>
-    </div>
     <img
-      v-if="print.design.PageBackground.Image != ''"
+      v-if="print.design.PageBackground.Image"
       class="center__bg"
       :src="print.design.PageBackground.Image"
       alt="Photo"
     />
     <div
-      v-else-if="print.design.PageBackground.Color != ''"
+      v-else-if="print.design.PageBackground.Color"
       class="center__bg-color"
       :style="{
         background: print.design.PageBackground.Color,
@@ -138,7 +135,6 @@
       </div>
     </div> -->
 
-    
     <div
       v-for="item in print.design.Page"
       :key="item.id"
@@ -300,7 +296,12 @@
       <p
         :id="item.id"
         @click="all(item)"
-        v-if="item.parametr == 'text' && !item.isTicketNumber && !item.isWaitingTime && lang == 'ru'"
+        v-if="
+          item.parametr == 'text' &&
+          !item.isTicketNumber &&
+          !item.isWaitingTime &&
+          lang == 'ru'
+        "
         class="text"
         :style="{
           width: item.size.width + 'px',
@@ -397,7 +398,7 @@
         :id="item.id"
         @click="all(item)"
         v-if="item.parametr == 'image'"
-        :src="item.urlImage"
+        :src="item.urlImage[lang]"
         alt=""
         class="image"
         :style="{
@@ -910,7 +911,6 @@ export default {
   beforeMount() {
     this.settings = window.MY_SETINGS_TERMINAL_DESIGN;
     this.lang = this.$route.query.lang;
-    
   },
   // created() {
   //   this.createNewTicket();
@@ -934,7 +934,7 @@ export default {
       bodySize: "getPageSize",
       print: "getPagePrint",
       ticketNumber: "getTicketNumber",
-      ticketWaitingTime: "getTicketWaitingTime"
+      ticketWaitingTime: "getTicketWaitingTime",
     }),
   },
   beforeDestroy() {
@@ -991,10 +991,12 @@ export default {
         setTimeout(() => {
           axios
             .get(
-              `${this.settings.api}/CreateNewTicket?ServiceId=${this.$route.params.serviceId}&TypeId=${this.$route.params.typeId}&Lang=${this.$route.query.lang}&PrintTicket=1`
+              `${this.settings.api}/CreateNewTicket?ServiceId=${this.$route.params.serviceId}&TypeId=${this.$route.params.typeId}&Lang=${this.lang}&PrintTicket=1`
             )
             .then((response) => {
-              this.ticketNumber = response.data.task.TicketPrefix + response.data.task.TicketNumber
+              this.ticketNumber =
+                response.data.task.TicketPrefix +
+                response.data.task.TicketNumber;
               // this.ticketNumber = response.data.task.TicketPrefix + response.data.task.TicketNumber
               // console.log(response.data.task.TicketPrefix + response.data.task.TicketNumber);
               if (response.data.Code < 0) {
@@ -1008,10 +1010,12 @@ export default {
         setTimeout(() => {
           axios
             .get(
-              `${this.settings.api}/CreateNewTicket?ServiceId=${this.$route.params.serviceId}&ClerkId=${this.$route.params.clerkId}&TypeId=${this.$route.params.typeId}&Lang=${this.$route.query.lang}&PrintTicket=1`
+              `${this.settings.api}/CreateNewTicket?ServiceId=${this.$route.params.serviceId}&ClerkId=${this.$route.params.clerkId}&TypeId=${this.$route.params.typeId}&Lang=${this.lang}&PrintTicket=1`
             )
             .then((response) => {
-              this.ticketNumber = response.data.task.TicketPrefix + response.data.task.TicketNumber
+              this.ticketNumber =
+                response.data.task.TicketPrefix +
+                response.data.task.TicketNumber;
               // this.ticketNumber = response.data.task.TicketPrefix + response.data.task.TicketNumber
               if (response.data.Code < 0) {
                 this.$toast.warning(response.data.Msg);
@@ -1264,19 +1268,32 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.print {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  background: transparent;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 9999;
-  padding: 50px;
+.center {
+  position: relative;
+  margin: 0 auto;
+  background-size: cover;
+
+  .item {
+    &:focus-visible {
+      outline: none;
+    }
+  }
+
+  &__bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    &-color {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  }
 
   .info {
     .title {
